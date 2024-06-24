@@ -24,7 +24,7 @@ const PaymentsPage = () => {
           iconColor: "#fa755a"
         }
       },
-      hostedSessionApiKey: 'NzVkYWE0N2QtYTJhNS00NGYyLWI0YWQtMjRiY2NjMTFlYTIzOjVhMThiZTQyLWQzYTQtNDI0MC05OWU1LTMwZDBkMGI0ODU1NA==',
+      apiKey: 'NzVkYWE0N2QtYTJhNS00NGYyLWI0YWQtMjRiY2NjMTFlYTIzOjVhMThiZTQyLWQzYTQtNDI0MC05OWU1LTMwZDBkMGI0ODU1NA==',
       language: 'en',
       outletRef: '0b64b105-6d7b-48e5-8d62-55cc977e756d',
       onSuccess: () => {
@@ -86,11 +86,11 @@ const PaymentsPage = () => {
       }
     };
   }, [mountCardInput, handleCheckoutButtonClick]);
-
+  
   return (
     <div>
       <div id={mountId}></div>
-      <button ref={checkoutButtonRef} className="checkoutButton">Check out</button>
+      <button onClick={() => checkoutButtonRef} className="checkoutButton">Check out</button>
     </div>
   );
 };

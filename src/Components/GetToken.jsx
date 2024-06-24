@@ -24,7 +24,7 @@ const GetToken = () => {
   return (
     <>
       { token.length > 0 ? (
-        <div className='token border border-success w-100 text-center fw-bold text-white d-flex justify-content-center gap-4 py-5'>
+        <div className='token border border-success w-100 text-center fw-bold text-white d-flex flex-col justify-content-center gap-4 py-5'>
             Click here: <a className='text-success' href={token} target='_blank' rel='noreferrer'>Here is your payment gateway link</a>
             <button className='bg-transparent border border-white round' onClick={() => copyToClipboard(token)}>
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white" className="bi bi-clipboard" viewBox="0 0 16 16">
