@@ -11,3 +11,15 @@
   justify-content: center;
   align-items: center;
 }
+
+.checkoutButton{
+  background-color: lightblue !important;
+  border: none !important;
+  box-shadow: .2rem .1rem .5rem .1rem rgba(0, 0, 0, 0.114);
+}
+
+.checkoutButton:active{
+  transform: scale(90%);
+  transition: 50ms ease-in-out;
+  border: none !important;
+}

@@ -1,27 +1,37 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const PaymentsPage = () => {
-  const checkoutButtonRef = useRef(null);
-  const mountId = 'mount-id';
+  const mountId = 'mount-point';
   let sessionId = '';
 
   // Function to mount card input
-  const mountCardInput = useCallback(() => {
+  const mountCardInput = () => {
     window.NI.mountCardInput(mountId, {
       style: {
+        main: {
+          backgroundColor: "lightblue",
+          padding: "20px",
+          borderRadius: "10px",
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+          height: "25rem"
+        },
         base: {
-          color: "#32325d",
+          color: "#333",
           fontFamily: "Arial, sans-serif",
-          fontSmoothing: "antialiased",
-          fontSize: "16px",
-          "::placeholder": {
-            color: "#aab7c4"
-          }
+          fontSize: "16px"
+        },
+        input: {
+          color: "#000080", // navy blue text
+          borderColor: "#1e90ff", // dodger blue border
+          borderRadius: "5px",
+          padding: "10px",
+          backgroundColor: "#fff" // white background for input fields
         },
         invalid: {
-          color: "#fa755a",
-          iconColor: "#fa755a"
+          borderColor: "#ff4500" // orange red border for invalid input
         }
       },
       apiKey: 'NzVkYWE0N2QtYTJhNS00NGYyLWI0YWQtMjRiY2NjMTFlYTIzOjVhMThiZTQyLWQzYTQtNDI0MC05OWU1LTMwZDBkMGI0ODU1NA==',
@@ -37,60 +47,55 @@ const PaymentsPage = () => {
         console.log('Field validity:', { isCVVValid, isExpiryValid, isNameValid, isPanValid });
       }
     });
-  }, [mountId]);
+  };
 
   // Function to handle checkout button click
-  const handleCheckoutButtonClick = useCallback(async () => {
+  const handleCheckoutButtonClick = async () => {
     try {
       const response = await window.NI.generateSessionId();
       sessionId = response.session_id;
+      const outletRef = '0b64b105-6d7b-48e5-8d62-55cc977e756d';
       console.log('Session ID generated:', sessionId);
+      console.log("click")
 
-      // Send sessionId to your backend to complete the payment
-      const paymentResponse = await axios.post('http://localhost:7000/api/hosted-sessions/payment', {
-        sessionId,
-        order: {
-          action: 'SALE',
-          amount: { currencyCode: 'AED', value: 100 } // Replace with actual order details
-        },
-        outletRef: '0b64b105-6d7b-48e5-8d62-55cc977e756d' // Replace with your outlet reference UUID
-      });
+      const paymentResponse = await axios.post('http://localhost:7000/api/hosted-sessions/payment', 
+        {
+          sessionId,
+          order: {
+            action: 'SALE',
+            amount: { currencyCode: 'AED', value: 100 }
+          },
+          outletRef 
+        }
+      );
 
-      const { status, error } = await window.NI.handlePaymentResponse(paymentResponse.data, {
-        mountId: '3ds_iframe',
-        style: { width: 500, height: 500 }
-      });
+      const { status } = await window.NI.handlePaymentResponse(paymentResponse.data, 
+        {
+          mountId: '3ds_iframe',
+          style: { width: 500, height: 500 }
+        }
+      );
 
       if (status === window.NI.paymentStates.AUTHORISED || status === window.NI.paymentStates.CAPTURED) {
-        alert('Payment successful');
+        toast.success('Payment successful');
       } else if (status === window.NI.paymentStates.FAILED || status === window.NI.paymentStates.THREE_DS_FAILURE) {
-        alert('Payment failed');
+        toast.warning('Payment failed');
       } else {
-        alert('Payment status unknown');
+        toast.warning('Payment status unknown');
       }
     } catch (error) {
       console.error('Error during payment process', error);
-      // alert('Payment process encountered an error');
     }
-  }, [sessionId]);
+  };
 
   useEffect(() => {
     mountCardInput();
-    const button = checkoutButtonRef.current;
-    if (button) {
-      button.addEventListener('click', handleCheckoutButtonClick);
-    }
-    return () => {
-      if (button) {
-        button.removeEventListener('click', handleCheckoutButtonClick);
-      }
-    };
-  }, [mountCardInput, handleCheckoutButtonClick]);
+  }, []);
   
   return (
-    <div>
-      <div id={mountId}></div>
-      <button onClick={() => checkoutButtonRef} className="checkoutButton">Check out</button>
+    <div className="container">
+      <div id={mountId} style={{ height: '26rem', width: '100%', marginTop: '1.5rem' }}></div>
+      <button onClick={() => handleCheckoutButtonClick()} className="checkoutButton btn btn-lg">Check out</button>
     </div>
   );
 };
